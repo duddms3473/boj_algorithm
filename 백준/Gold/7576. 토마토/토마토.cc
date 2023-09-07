@@ -1,67 +1,66 @@
-#include <iostream>
-#include <queue>
-
+#include<iostream>
+#include<queue>
 using namespace std;
 
-int tomatoMap[1000][1000];
-queue<pair<int, int>> q;
-int result = 0;
-int M, N;
-int dx[] = {1, 0, -1, 0};
-int dy[] = {0, 1, 0, -1};
-void tomatoBFS() {
-	while (!q.empty()) {
-		int xx = q.front().first;
-		int yy = q.front().second;
+struct tomato {
+    int x, y;
+};
 
-		q.pop();
+int dx[] = { 0,0,1,-1 };
+int dy[] = { 1,-1,0,0 };
 
-		for (int i = 0; i < 4; i++) {
-			int nx = xx + dx[i];
-			int ny = yy + dy[i];
-
-			if (nx >= 0 && ny >= 0 && nx < N && ny < M) {
-				if (tomatoMap[nx][ny] == 0) {
-					tomatoMap[nx][ny] = tomatoMap[xx][yy] + 1;
-					q.push(make_pair(nx, ny));
-				}
-			}
-		}
-	}
-}
-
-void tomato() {
-	cin >> M >> N;
-
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < M; j++) {
-			cin >> tomatoMap[i][j];
-
-			if (tomatoMap[i][j] == 1) {
-				q.push(make_pair(i, j));
-			}
-		}
-	}
-	tomatoBFS();
-
-
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < M; j++) {
-			if (tomatoMap[i][j] == 0) {
-				cout << -1 << "\n";
-				return;
-			}
-
-			if (result < tomatoMap[i][j]) {
-				result = tomatoMap[i][j];
-			}
-		}
-	}
-
-	cout << result - 1 << "\n";
-}
 int main() {
-	tomato();
+    ios::sync_with_stdio(false); 
+    int m, n, max = 0;
+    cin >> n >> m;
+    int arr[1001][1001];
+    queue<tomato> que;
+    
+//입력받으며 익은 토마토인 경우 큐에 넣어줌
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> arr[i][j];
+            if (arr[i][j] == 1) {
+                tomato tmp;
+                tmp.x = i;
+                tmp.y = j;
+                que.push(tmp);
+            }
 
-	return 0;
-} 
+        }
+    }
+
+  //일종의 BFS..
+    while (!que.empty()) {
+        tomato t;
+        int tx, ty, xx, yy;
+        t = que.front();
+        que.pop();
+        tx = t.x;
+        ty = t.y;
+
+        for (int i = 0; i < 4; i++) {
+            xx = tx + dx[i];
+            yy = ty + dy[i];
+
+            if (xx >= 0 and xx <m and yy >= 0 and yy <n and arr[xx][yy] == 0) {
+                tomato tmp;
+                tmp.x = xx; tmp.y = yy;
+                que.push(tmp);
+                arr[xx][yy] = arr[tx][ty]+1;
+            }
+        }
+    }
+    
+//익지않은 토마토 있는지 확인 후 며칠 필요한 지 출력
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (arr[i][j] == 0) {
+                cout << -1 << endl;
+                return 0;
+            }
+            if (max < arr[i][j]) max = arr[i][j];
+        }
+    }
+    cout << max-1 << endl;
+}
